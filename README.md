@@ -1,1 +1,1 @@
-# low-level-programming-STRC51
+# LED and Buttons aligment for STRC51 using language C and SDCC compiler
