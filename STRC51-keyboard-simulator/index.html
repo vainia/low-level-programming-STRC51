@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Symulacja klawiatury</title>
+
+	<link rel="stylesheet" href="style.css">
+	<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
+
+<body id="home">
+    <div id="container">
+			<div id="left">
+
+
+        <div id="output">
+            <span id="u15">U15 = 1111</span>
+            <span id="u12">U12 = 1111</span>
+
+        </div>
+        <div id="keyboard">
+
+        </div>
+			</div>
+				<div id="toolbar">
+					<button id="start">Start</button>
+					szybkość
+					<input type="text" value="1000" id="speed"></input>
+					<p>
+						<b> Instrukcja: </b>
+						<ul>
+							<li>
+								1. Wciśniecie start spowoduje uruchomienie ciągle działającej funkcji
+								 zmieniającej stan rejestru U15 tak by sprawdzić jedną kolumne
+								 czy wciśnięty został klawisz.
+							</li>
+							<li>
+								2. Szybkośc działania funkcji można zmieńić użtwając pola tekstowego
+								(czas podaje się w milisekundach).
+							</li>
+							<li>
+								3. naciśnięcie jednego z przycisków klawiatury symuluje nasiśnięcie i
+								 przytrzymanie klawisza na płytce.
+							</li>
+						</ul>
+					</p>
+
+				</div>
+	</div>
+
+
+</body>
+    <script src="main.js"></script>
+</html>
