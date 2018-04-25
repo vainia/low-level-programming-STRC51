@@ -8,24 +8,14 @@ sfr at 0x90 P1;
 #define KLAW_3 0xFB
 #define KLAW_4 0xF7
 
-unsigned short char1[8] = {
-	0x00,
-	0x00,
-	0x00,
-	0x00,
-	0x00,
-	0x00,
-	0x1F
-};
-
-unsigned short char2[8] = {
-	0x00,
-	0x00,
-	0x00,
-	0x00,
-	0x00,
-	0x1F,
-	0x00
+const unsigned short custom_Char_Set_5x7[] = {
+  0x00,0x00,0x00,0x00,0x00,0x00,0x1F,0x00, // Code for CGRAM memory space 1
+  0x00,0x00,0x00,0x00,0x00,0x1F,0x00,0x00, // Code for CGRAM memory space 2
+  0x00,0x00,0x00,0x00,0x1F,0x00,0x00,0x00, // Code for CGRAM memory space 3
+  0x00,0x00,0x00,0x1F,0x00,0x00,0x00,0x00, // Code for CGRAM memory space 4
+  0x00,0x00,0x1F,0x00,0x00,0x00,0x00,0x00, // Code for CGRAM memory space 5
+  0x00,0x1F,0x00,0x00,0x00,0x00,0x00,0x00, // Code for CGRAM memory space 6
+  0x1F,0x00,0x00,0x00,0x00,0x00,0x00,0x00  // Code for CGRAM memory space 7
 };
 
 const int klaw[4] = {KLAW_1, KLAW_2, KLAW_3, KLAW_4};
@@ -47,15 +37,15 @@ void send_Command_8_bit(unsigned char polecenie)
 
 void send_Command_4_bit(unsigned char polecenie)
 {
-  P1=polecenie & 0xf0; //najpierw starsza po��wka bajtu
-  P1=(polecenie & 0xf0) | E; //sygna� �strob�
+  P1=polecenie & 0xf0;
+  P1=(polecenie & 0xf0) | E;
   P1=(polecenie & 0xf0) & !E;
-  P1=(polecenie << 4) & 0xf0; //teraz m�odsza po��wka bajtu
-  P1=((polecenie << 4) & 0xf0) | E; //sygna� �strob�
+  P1=(polecenie << 4) & 0xf0;
+  P1=((polecenie << 4) & 0xf0) | E;
   P1=((polecenie << 4) & 0xf0) & !E;
 }
 
-void print_Date(unsigned char dana)
+void print_Info_4_bit(unsigned char dana)
 {
   P1=(dana & 0xf0) | RS;
   P1=((dana & 0xf0) | E) | RS;
@@ -76,37 +66,48 @@ void czekaj(int d){
 
 void lcd_init()
 {
-  send_Command_8_bit(0x30);
-  czekaj(50);
-  send_Command_8_bit(0x30);
-  czekaj(50);
-  send_Command_8_bit(0x30);
-  czekaj(50);
-  send_Command_8_bit(0x20);
-  czekaj(50);
+  // send_Command_8_bit(0x30);
+  // czekaj(50);
+  // send_Command_8_bit(0x30);
+  // czekaj(50);
+  // send_Command_8_bit(0x30);
+  // czekaj(50);
+  // send_Command_8_bit(0x20);
+  // czekaj(50);
   send_Command_4_bit(0x28);
   czekaj(50);
-  send_Command_4_bit(0x08);
+  // send_Command_4_bit(0x08);
+  // czekaj(50);
+  // send_Command_4_bit(0x0E);
+  // czekaj(50);
+  send_Command_4_bit(0x0E);
+  czekaj(50);
 
+  send_Command_8_bit(0x04);
   czekaj(50);
-  send_Command_4_bit(0x0E);
+  send_Command_8_bit(0x00);
   czekaj(50);
-  send_Command_4_bit(0x0E);
+  for (i = 0; i <= 63 ; i++)
+  {
+     print_Info_4_bit(custom_Char_Set_5x7[i]);
+     czekaj(100);
+  }
+  lcd_clear();
 }
 
 
 void lcd_write(char *text) {
   while(*text) {
-     print_Date(*text);
+     print_Info_4_bit(*text);
      czekaj(100);
      *text++;
   }
 }
 
 void lcd_czas(char *text) {
-  print_Date(*text);
+  print_Info_4_bit(*text);
   *text++;
-  print_Date(*text);
+  print_Info_4_bit(*text);
 }
 
 void lcd_clear(void) {
@@ -114,14 +115,13 @@ void lcd_clear(void) {
   czekaj(20);
   send_Command_4_bit(0x02);
   czekaj(20);
-  send_Command_4_bit(0x0D);
-  czekaj(20);
-
-  send_Command_4_bit(0x80);
-  czekaj(50);
+  // send_Command_4_bit(0x0D);
+  // czekaj(20);
+  // send_Command_4_bit(0x80);
+  // czekaj(50);
 }
 
-void lcd_xy(unsigned char w, unsigned char k)
+void set_Cursor_XY(unsigned char w, unsigned char k)
 {
   send_Command_4_bit((w*0x40+k) | 0x80);
   czekaj(20);
@@ -165,23 +165,24 @@ void zmien_czas(int czas)
 
 	t1 = t - t2*10;
 
-	lcd_xy(1, 0);
+	set_Cursor_XY(1, 0);
 	//godziny
-	print_Date(znak(t2));
-	print_Date(znak(t1));
+	print_Info_4_bit(znak(t2));
+	print_Info_4_bit(znak(t1));
 	lcd_write(" : ");
+   print_Info_4_bit(0x01);
 	//minuty
 	t = _minuta;
 	t2 = t / 10;
 	t1 = t - t2*10;
 
-	print_Date(znak(t2));
-	print_Date(znak(t1));
+	print_Info_4_bit(znak(t2));
+	print_Info_4_bit(znak(t1));
 }
 
 void strefa(int s) {
   lcd_clear();
-  lcd_xy(0, 0);
+  set_Cursor_XY(0, 0);
 
   if(s == 0) {
      lcd_write("Warszawa");
