@@ -87,7 +87,7 @@ void lcd_init()
   czekaj(50);
   send_Command_8_bit(0x00);
   czekaj(50);
-  for (i = 0; i <= 63 ; i++)
+  for (i = 0; i <= 7*8 ; i++)
   {
      print_Info_4_bit(custom_Char_Set_5x7[i]);
      czekaj(100);
