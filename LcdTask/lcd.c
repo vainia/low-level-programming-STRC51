@@ -3,11 +3,38 @@
 
 static const char E = 0x08;
 static const char RS = 0x04;
+
+static volatile long posixtime = 0;
+static volatile int milliseconds = 0;
 static volatile int mcounter = 0;
+static const long cnt_freq = 3640;
 
 void msleep(int n) {
     mcounter = 0;
     while(mcounter < n) __asm__("nop");
+}
+
+void init_time() {
+    TMOD &= 0x0F;
+    TMOD |= 0x20; 
+    IE = 0x88;
+}
+
+void counter_timer() {
+    static int t = 0;
+    static char mt = 0;
+    
+    if (++mt > 3) {
+        mt = 0;
+        ++milliseconds;
+        ++mcounter;
+    }
+    
+    if (++t >= cnt_freq) {
+        ++posixtime;
+        milliseconds = 0;
+        t = 0;
+    }
 }
 
 unsigned int DEC_TO_OCT(unsigned int n)
@@ -28,10 +55,9 @@ unsigned int DIGIT_LEN(unsigned int n) {
     return 1 + DIGIT_LEN(n / 10);
 }
 
-static char GET_OCTET(unsigned int x, char n)
-{
-    if (DIGIT_LEN(DEC_TO_OCT(x)) < n) return 0;
-    return ((x & 07 << (3*n)) >> (3*n));
+static char GET_OCTET(unsigned int x, char n) {
+    if (DIGIT_LEN(DEC_TO_OCT(x)) < n) return '0';
+    return '0' + ((x & 07 << (3*n)) >> (3*n));
 }
 
 static void send_cmd_8(unsigned char cmd)
@@ -80,39 +106,20 @@ void LcdClrScr() {
 
 void ShowProgressLine(char idx) {
     print_LCD_at(idx%8, idx, idx < 8 ? 1 : 0);
-    msleep(500);
+    msleep(1);
 }
 
-void DrawIt() {
-    char i=0;
-    for(i=0; i<16; ++i) {
-      ShowProgressLine(i);
-      msleep(1);
-    }
-}
-
-static char octet_to_char(char x) {
-    return '0' + x;
+void ClearProgressLine(char idx) {
+    print_LCD_at(' ', idx, idx < 8 ? 1 : 0);
+    msleep(1);
 }
 
 void LcdPrintOCT32(unsigned int x) {
     char i = 0;
-    print_LCD('8');
-    msleep(1);
-    print_LCD(':');
-    msleep(1);
-    for(i = 0; i < 11; ++i)
+    for(i = 11; i > 0; --i)
     {
-        print_LCD(octet_to_char(GET_OCTET(x,i)));
-        msleep(1);
-    }
-}
-
-void CountIt(){
-    int i = 0;
-    for(i = 0; i < 32767; ++i)
-    {
-       LcdPrintOCT32(i);
+        print_LCD(GET_OCTET(x,i-1));
+        msleep(0);
     }
 }
 

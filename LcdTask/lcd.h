@@ -2,12 +2,16 @@
 #define LCD_H
 
 void msleep(int n);
-void DrawIt();
+void counter_timer();
+void init_time();
+
 void CountIt();
 
 void LcdInit();
 void LcdClrScr();
 void ShowProgressLine(char idx);
+void ClearProgressLine(char idx);
+
 void LcdPrintOCT32(unsigned int x);
 
 void set_cursor_pos(char x, char y);
