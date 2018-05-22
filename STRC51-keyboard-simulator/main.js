@@ -38,7 +38,7 @@ var ButtonArray = (function () {
 
       for (var i = 0; i < 4; i++) {
         var elclass = this.testArray[i][row].className;
-        if (elclass === "key") {
+        if (elclass === "key btn btn-outline-info") {
           continue;
         } else {
 
@@ -100,12 +100,12 @@ var ButtonArray = (function () {
     value: function makeElement(elem) {
       var t = document.createElement("button");
       t.setAttribute("id", elem);
-      t.setAttribute("class", "key");
+      t.setAttribute("class", "key btn btn-outline-info");
       t.onclick = function (e) {
-        if (this.className == "key") {
-          this.className = "pressed";
+        if (this.className == "key btn btn-outline-info") {
+          this.className = "btn btn-success";
         } else {
-          this.className = "key";
+          this.className = "key btn btn-outline-info";
         }
       };
       t.innerHTML = elem;
@@ -161,11 +161,11 @@ function run() {
     if (i == 4) {
       i = 0;
     }
-    u15.innerHTML = "U15 = " + q(i);
+    u15.innerHTML = q(i); //"U15 = " +
     var el = test.checkRow(i);
     if (!isNaN(el)) {
       console.log(el);
-      var str = "U12 = " + q(el, true);
+      var str = q(el, true); //"U12 = " +
       u12.innerHTML = str;
     } else {
       console.log("no click detected ");
