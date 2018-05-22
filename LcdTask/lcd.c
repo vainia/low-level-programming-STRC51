@@ -10,7 +10,7 @@ void msleep(int n) {
     while(mcounter < n) __asm__("nop");
 }
 
-unsigned int DEC_TO_HEX(unsigned int n)
+unsigned int DEC_TO_OCT(unsigned int n)
 {
     unsigned int res = 0;
     unsigned int pos = 1;
@@ -30,7 +30,7 @@ unsigned int DIGIT_LEN(unsigned int n) {
 
 static char GET_OCTET(unsigned int x, char n)
 {
-    if (DIGIT_LEN(DEC_TO_HEX(x)) < n) return 0;
+    if (DIGIT_LEN(DEC_TO_OCT(x)) < n) return 0;
     return ((x & 07 << (3*n)) >> (3*n));
 }
 
